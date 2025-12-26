@@ -1,0 +1,77 @@
+import { Injectable, signal } from '@angular/core';
+import { Apollo } from 'apollo-angular';
+import {
+    OWNERS_QUERY,
+    CREATE_OWNER_MUTATION,
+    DELETE_OWNER_MUTATION,
+    UPDATE_OWNER_MONEY_MUTATION
+} from '../graphql/owner.graphql';
+import { Owner } from '../graphql/types';
+import {Observable} from "rxjs";
+import MutateResult = Apollo.MutateResult;
+
+@Injectable({ providedIn: 'root' })
+export class OwnersService {
+    owners = signal<Owner[]>([]);
+    loading = signal(true);
+    error = signal<any>(null);
+
+    constructor(private apollo: Apollo) {}
+
+    loadOwners() {
+        this.apollo.query<{ owners: Owner[] }>({
+            query: OWNERS_QUERY,
+            fetchPolicy: 'network-only'
+        }).subscribe({
+            next: res => {
+                this.owners.set(res.data?.owners ?? []);
+                this.loading.set(false);
+            },
+            error: err => this.error.set(err)
+        });
+    }
+
+    createOwner(name: string, money: number) {
+        return this.apollo.mutate({
+            mutation: CREATE_OWNER_MUTATION,
+            variables: { name, money },
+            refetchQueries: [OWNERS_QUERY]
+        });
+    }
+
+    deleteOwner(id: number) {
+        return this.apollo.mutate({
+            mutation: DELETE_OWNER_MUTATION,
+            variables: { id },
+            update: (cache) => {
+                const data: any = cache.readQuery({ query: OWNERS_QUERY });
+                cache.writeQuery({
+                    query: OWNERS_QUERY,
+                    data: {
+                        owners: data.owners.filter((o: Owner) => o.id !== id)
+                    }
+                });
+            }
+        });
+    }
+
+    updateOwnerMoney(id: number, money: number) {
+        return this.apollo.mutate({
+            mutation: UPDATE_OWNER_MONEY_MUTATION,
+            variables: { id, money },
+            refetchQueries: [OWNERS_QUERY]
+        });
+    }
+}
+
+interface UpdateOwnerMoneyResponse {
+    updateOwnerMoney: Owner;
+}
+
+interface CreateOwnerResponse {
+    createOwner: Owner;
+}
+
+interface DeleteOwnerResponse {
+    deleteOwnerById: number;
+}

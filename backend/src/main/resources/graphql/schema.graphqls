@@ -1,0 +1,27 @@
+type Dog {
+    id: ID!
+    name: String!
+    age: Int!
+    owner: Owner!
+}
+
+type Owner {
+    id: ID!
+    name: String!
+    money: Float!
+}
+
+type Query {
+    dogs: [Dog]
+    dogById(id: ID!): Dog
+    dogsByOwnerId(ownerId: ID!): [Dog]
+    owners: [Owner]
+    ownerById(id: ID!): Owner
+}
+
+type Mutation {
+    createDog(name: String!, age: Int!, ownerId: ID!): Dog!
+    createOwner(name: String!, money: Float!): Owner!
+    deleteOwnerById(id: ID!): Int!
+    updateOwnerMoney(id: ID!, money: Float!): Owner!
+}
