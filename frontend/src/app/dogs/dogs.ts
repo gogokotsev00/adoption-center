@@ -1,8 +1,7 @@
 import {Component, OnInit, signal} from "@angular/core";
-import {Apollo} from "apollo-angular";
 import {Dog} from "../graphql/types";
 import {OwnersService} from "../service/owners.service";
-import {CREATE_DOG_MUTATION} from "../graphql/dogs.graphql";
+import {DogsService} from "../service/dogs.service";
 
 @Component({
     selector: 'app-dogs',
@@ -19,7 +18,7 @@ import {CREATE_DOG_MUTATION} from "../graphql/dogs.graphql";
             }
         </select>
 
-        <button id="addDogButton" (click)="addDog(dogNameInput.value, Number(dogAgeInput.value), Number(dogOwnerSelect.value))">Add Dog</button>
+        <button id="addDogButton" (click)="addDog(dogNameInput.value, Number(dogAgeInput.value), dogOwnerSelect.value)">Add Dog</button>
         <span id="updatedOwnerMoneyResult" [hidden]="createdDog() === null">Created dog {{ createdDog()?.name }} with age: {{ createdDog()?.age }} years</span>
     `,
     styleUrl: './dogs.css'
@@ -30,18 +29,16 @@ export class Dogs implements OnInit {
     createdDog = signal<Dog | null>(null)
 
     constructor(private ownersService: OwnersService,
-                private apollo: Apollo) {}
+                private dogsService: DogsService) {}
 
     ngOnInit() {
         this.ownersService.loadOwners();
     }
 
-    addDog(name: string, age: number, ownerId: number) {
-        this.apollo.mutate({
-            mutation: CREATE_DOG_MUTATION,
-            variables: { name, age, ownerId }
-        }).subscribe(({ data }: any) =>
-            this.createdDog.set(data?.createDog ?? null)
+    addDog(name: string, age: number, ownerId: string) {
+        this.dogsService
+            .addDog(name, age, ownerId)
+            .subscribe(({ data }: any) => this.createdDog.set(data?.createDog ?? null)
         );
     }
 

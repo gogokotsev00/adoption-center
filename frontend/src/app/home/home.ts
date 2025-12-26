@@ -28,7 +28,7 @@ import {Owner} from "../graphql/types";
                       }
                   }
               </select>
-              <button id="deleteOwnerBtn" (click)="deleteOwner(Number(deletionNameSelect.value))">Delete Owner</button>
+              <button id="deleteOwnerBtn" (click)="deleteOwner(deletionNameSelect.value)">Delete Owner</button>
               <span id="deletedOwnerResult" [hidden]="!ownerDeleted()">Owner has been deleted!</span>
           } @else {
               <select #updateMoneyNameSelect>
@@ -40,7 +40,7 @@ import {Owner} from "../graphql/types";
                   }
               </select>
               <input #updateMoneyInput placeholder="0.00" type="number" step=".01" maxlength="6">
-              <button id="updateMoneyButton" (click)="updateOwnerMoney(Number(updateMoneyNameSelect.value), parseMoneyInput(updateMoneyInput.value))">Update Owner's Money</button>
+              <button id="updateMoneyButton" (click)="updateOwnerMoney(updateMoneyNameSelect.value, parseMoneyInput(updateMoneyInput.value))">Update Owner's Money</button>
               <span id="updatedOwnerMoneyResult" [hidden]="updatedOwner() === null">Owner {{ updatedOwner()?.name }} has new money stand: {{ updatedOwner()?.money }}$</span>
           }
           <button id="backButton" (click)="clearSelectedMode()">Back to mode selection</button>
@@ -89,13 +89,13 @@ export class Home implements OnInit {
             );
     }
 
-    deleteOwner(id: number) {
+    deleteOwner(id: string) {
         this.ownersService
             .deleteOwner(id)
             .subscribe(() => this.ownerDeleted.set(true));
     }
 
-    updateOwnerMoney(id: number, money: string) {
+    updateOwnerMoney(id: string, money: string) {
         this.ownersService
             .updateOwnerMoney(id, +money)
             .subscribe(({ data }: any) =>

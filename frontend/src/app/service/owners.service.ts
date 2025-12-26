@@ -7,8 +7,6 @@ import {
     UPDATE_OWNER_MONEY_MUTATION
 } from '../graphql/owner.graphql';
 import { Owner } from '../graphql/types';
-import {Observable} from "rxjs";
-import MutateResult = Apollo.MutateResult;
 
 @Injectable({ providedIn: 'root' })
 export class OwnersService {
@@ -39,7 +37,7 @@ export class OwnersService {
         });
     }
 
-    deleteOwner(id: number) {
+    deleteOwner(id: string) {
         return this.apollo.mutate({
             mutation: DELETE_OWNER_MUTATION,
             variables: { id },
@@ -55,23 +53,11 @@ export class OwnersService {
         });
     }
 
-    updateOwnerMoney(id: number, money: number) {
+    updateOwnerMoney(id: string, money: number) {
         return this.apollo.mutate({
             mutation: UPDATE_OWNER_MONEY_MUTATION,
             variables: { id, money },
             refetchQueries: [OWNERS_QUERY]
         });
     }
-}
-
-interface UpdateOwnerMoneyResponse {
-    updateOwnerMoney: Owner;
-}
-
-interface CreateOwnerResponse {
-    createOwner: Owner;
-}
-
-interface DeleteOwnerResponse {
-    deleteOwnerById: number;
 }
