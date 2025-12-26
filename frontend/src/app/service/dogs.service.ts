@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { CREATE_DOG_MUTATION } from '../graphql/dogs.graphql';
-import {OWNERS_QUERY} from "../graphql/owner.graphql";
+import { OWNERS_QUERY } from "../graphql/owner.graphql";
 
 @Injectable({ providedIn: 'root' })
 export class DogsService {

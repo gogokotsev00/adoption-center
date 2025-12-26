@@ -1,12 +1,12 @@
-import { Injectable, signal } from '@angular/core';
-import { Apollo } from 'apollo-angular';
+import {Injectable, signal} from '@angular/core';
+import {Apollo} from 'apollo-angular';
 import {
-    OWNERS_QUERY,
     CREATE_OWNER_MUTATION,
     DELETE_OWNER_MUTATION,
+    OWNERS_QUERY,
     UPDATE_OWNER_MONEY_MUTATION
 } from '../graphql/owner.graphql';
-import { Owner } from '../graphql/types';
+import {Owner} from '../graphql/types';
 
 @Injectable({ providedIn: 'root' })
 export class OwnersService {

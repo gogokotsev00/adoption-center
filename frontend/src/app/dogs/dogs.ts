@@ -29,7 +29,8 @@ export class Dogs implements OnInit {
     createdDog = signal<Dog | null>(null)
 
     constructor(private ownersService: OwnersService,
-                private dogsService: DogsService) {}
+                private dogsService: DogsService) {
+    }
 
     ngOnInit() {
         this.ownersService.loadOwners();
@@ -38,8 +39,8 @@ export class Dogs implements OnInit {
     addDog(name: string, age: number, ownerId: string) {
         this.dogsService
             .addDog(name, age, ownerId)
-            .subscribe(({ data }: any) => this.createdDog.set(data?.createDog ?? null)
-        );
+            .subscribe(({data}: any) => this.createdDog.set(data?.createDog ?? null)
+            );
     }
 
     protected readonly Number = Number;

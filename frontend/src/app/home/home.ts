@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {OwnersService} from "../service/owners.service";
 import {Owner} from "../graphql/types";
 
