@@ -1,4 +1,4 @@
-package com.dataCenter.demo;
+package com.dataCenter.adoptionCenter;
 
 import lombok.NonNull;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
-package com.dataCenter.demo.repositories;
+package com.dataCenter.adoptionCenter.repositories;
 
-import com.dataCenter.demo.entities.Dog;
+import com.dataCenter.adoptionCenter.entities.Dog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

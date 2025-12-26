@@ -1,6 +1,6 @@
-package com.dataCenter.demo.repositories;
+package com.dataCenter.adoptionCenter.repositories;
 
-import com.dataCenter.demo.entities.Owner;
+import com.dataCenter.adoptionCenter.entities.Owner;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

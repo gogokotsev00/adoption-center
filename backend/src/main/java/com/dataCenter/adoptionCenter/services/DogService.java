@@ -1,7 +1,7 @@
-package com.dataCenter.demo.services;
+package com.dataCenter.adoptionCenter.services;
 
-import com.dataCenter.demo.entities.Dog;
-import com.dataCenter.demo.repositories.DogRepository;
+import com.dataCenter.adoptionCenter.entities.Dog;
+import com.dataCenter.adoptionCenter.repositories.DogRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

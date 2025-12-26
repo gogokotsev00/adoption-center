@@ -1,13 +1,13 @@
-package com.dataCenter.demo;
+package com.dataCenter.adoptionCenter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoApplication {
+public class AdoptionCenterApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
+		SpringApplication.run(AdoptionCenterApplication.class, args);
 	}
 
 }

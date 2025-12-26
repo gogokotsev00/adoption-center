@@ -1,4 +1,4 @@
-package com.dataCenter.demo.entities;
+package com.dataCenter.adoptionCenter.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

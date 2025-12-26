@@ -1,7 +1,7 @@
-package com.dataCenter.demo.controllers;
+package com.dataCenter.adoptionCenter.controllers;
 
-import com.dataCenter.demo.entities.Owner;
-import com.dataCenter.demo.services.OwnerService;
+import com.dataCenter.adoptionCenter.entities.Owner;
+import com.dataCenter.adoptionCenter.services.OwnerService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;

@@ -1,8 +1,7 @@
-package com.dataCenter.demo.services;
+package com.dataCenter.adoptionCenter.services;
 
-import com.dataCenter.demo.entities.Owner;
-import com.dataCenter.demo.repositories.OwnerRepository;
-import org.springframework.graphql.data.method.annotation.Argument;
+import com.dataCenter.adoptionCenter.entities.Owner;
+import com.dataCenter.adoptionCenter.repositories.OwnerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
