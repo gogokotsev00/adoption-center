@@ -32,32 +32,21 @@ export class OwnersService {
     createOwner(name: string, money: number) {
         return this.apollo.mutate({
             mutation: CREATE_OWNER_MUTATION,
-            variables: { name, money },
-            refetchQueries: [OWNERS_QUERY]
+            variables: { name, money }
         });
     }
 
     deleteOwner(id: string) {
         return this.apollo.mutate({
             mutation: DELETE_OWNER_MUTATION,
-            variables: { id },
-            update: (cache) => {
-                const data: any = cache.readQuery({ query: OWNERS_QUERY });
-                cache.writeQuery({
-                    query: OWNERS_QUERY,
-                    data: {
-                        owners: data.owners.filter((o: Owner) => o.id !== id)
-                    }
-                });
-            }
+            variables: { id }
         });
     }
 
     updateOwnerMoney(id: string, money: number) {
         return this.apollo.mutate({
             mutation: UPDATE_OWNER_MONEY_MUTATION,
-            variables: { id, money },
-            refetchQueries: [OWNERS_QUERY]
+            variables: { id, money }
         });
     }
 }

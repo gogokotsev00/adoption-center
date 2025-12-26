@@ -9,17 +9,17 @@ import {Owner} from "../graphql/types";
       @if (!modeSelected()) {
           <select #modeTypeSelect (change)="selectModeType($any($event.target).value)">
               <option value="" disabled selected>Select mode</option>
-              <option value="ADD">ADD</option>
-              <option value="DELETE">DELETE</option>
-              <option value="UPDATE">UPDATE</option>
+              @for (mode of Object.values(ModeType); track modeType) {
+                  <option [value]="mode">{{ mode }}</option>
+              }
           </select>
       } @else {
-          @if (modeType() === 'ADD') {
+          @if (modeType() === ModeType.ADD_MODE) {
               <input #addNameInput placeholder="Name" type="text" maxlength="35">
               <input #addMoneyInput placeholder="0.00" type="number" step=".01" maxlength="6">
               <button id="createOwnerBtn" (click)="createOwner(addNameInput.value, parseMoneyInput(addMoneyInput.value))">Create Owner</button>
               <span id="newOwnerResult" [hidden]="createdOwner() === null">Created an owner with name: {{ createdOwner()?.name }} and ID: {{ createdOwner()?.id }}</span>
-          } @else if (modeType() === 'DELETE') {
+          } @else if (modeType() === ModeType.DELETE_MODE) {
               <select #deletionNameSelect>
                   <option value="" disabled selected>Select owner</option>
                   @if (owners() && owners().length > 0) {
@@ -53,13 +53,20 @@ import {Owner} from "../graphql/types";
           <div>Error :(</div>
           <p>{{ error().message }}</p>
       }
-      @if (owners() && owners().length > 0) {
-          <div id="ownersList">
-              @for (owner of owners(); track owner.id) {
-                  <p>Owner '{{ owner.name }}' with ID {{ owner.id }} has: {{ Number(owner.money).toFixed(2) }}$</p>
-              }
-          </div>
-      }
+      <table>
+          <thead>
+              <td>ID</td>
+              <td>Name</td>
+              <td>Money</td>
+          </thead>
+          @for (owner of owners(); track owner.id) {
+              <tr>
+                  <td>{{ owner.id }}</td>
+                  <td>{{ owner.name }}</td>
+                  <td>{{ Number(owner.money).toFixed(2) }}$</td>
+              </tr>
+          }
+      </table>
   `,
   styleUrl: 'home.css'
 })
@@ -81,26 +88,29 @@ export class Home implements OnInit {
         this.ownersService.loadOwners();
     }
 
-    createOwner(name: string, money: string) {
+    createOwner(name: string, money: number) {
         this.ownersService
-            .createOwner(name, +money)
+            .createOwner(name, money)
             .subscribe(({ data }: any) =>
                 this.createdOwner.set(data?.createOwner ?? null)
             );
+        this.ownersService.loadOwners();
     }
 
     deleteOwner(id: string) {
         this.ownersService
             .deleteOwner(id)
             .subscribe(() => this.ownerDeleted.set(true));
+        this.ownersService.loadOwners();
     }
 
-    updateOwnerMoney(id: string, money: string) {
+    updateOwnerMoney(id: string, money: number) {
         this.ownersService
-            .updateOwnerMoney(id, +money)
+            .updateOwnerMoney(id, money)
             .subscribe(({ data }: any) =>
                 this.updatedOwner.set(data?.updateOwnerMoney ?? null)
             );
+        this.ownersService.loadOwners();
     }
 
     selectModeType(modeType: ModeType) {
@@ -114,10 +124,18 @@ export class Home implements OnInit {
     }
 
     parseMoneyInput(money: string) {
-        return Number(money).toFixed(2);
+        return +Number(money).toFixed(2);
     }
 
     protected readonly Number = Number;
+    protected readonly ModeType = ModeType;
+    protected readonly Object = Object;
 }
 
-type ModeType = 'ADD' | 'DELETE' | 'UPDATE';
+const ModeType = {
+    ADD_MODE: 'ADD',
+    DELETE_MODE: 'DELETE',
+    UPDATE_MODE: 'UPDATE',
+};
+
+type ModeType = typeof ModeType[keyof typeof ModeType];
