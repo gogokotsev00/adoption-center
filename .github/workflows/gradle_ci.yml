@@ -51,7 +51,7 @@ jobs:
         context: ./backend
         file: ./backend/Dockerfile
         push: true
-        tags: adoption-backend:latest
+        tags: ${{ vars.DOCKERHUB_USERNAME }}/adoption-center-repo:latest
 
   dependency-submission:
     runs-on: ubuntu-latest
