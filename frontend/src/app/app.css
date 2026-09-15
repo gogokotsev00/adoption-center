@@ -10,3 +10,31 @@ header {
 .content {
   padding: var(--content-padding);
 }
+
+nav {
+  padding: var(--content-padding);
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+nav a:hover {
+  background-color: var(--accent-color);
+}
+
+nav a.active {
+  pointer-events: none;
+  cursor: default;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: var(--primary-color);
+}

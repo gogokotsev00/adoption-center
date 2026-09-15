@@ -22,7 +22,11 @@ export class OwnersService {
             fetchPolicy: 'network-only'
         }).subscribe({
             next: res => {
-                this.owners.set(res.data?.owners ?? []);
+                const rawOwners = res.data?.owners ?? [];
+                const sorted = [...rawOwners].sort((a, b) =>
+                    a.id.localeCompare(b.id, undefined, { numeric: true })
+                );
+                this.owners.set(sorted);
                 this.loading.set(false);
             },
             error: err => this.error.set(err)
