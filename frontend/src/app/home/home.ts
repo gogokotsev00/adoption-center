@@ -9,7 +9,7 @@ import {Owner} from "../graphql/types";
       @if (!modeSelected()) {
           <select #modeTypeSelect (change)="selectModeType($any($event.target).value)">
               <option value="" disabled selected>Select mode</option>
-              @for (mode of Object.values(ModeType); track modeType) {
+              @for (mode of Object.values(ModeType); track mode) {
                   <option [value]="mode">{{ mode }}</option>
               }
           </select>
@@ -91,26 +91,28 @@ export class Home implements OnInit {
     createOwner(name: string, money: number) {
         this.ownersService
             .createOwner(name, money)
-            .subscribe(({ data }: any) =>
-                this.createdOwner.set(data?.createOwner ?? null)
-            );
-        this.ownersService.loadOwners();
+            .subscribe(({ data }: any) => {
+                this.createdOwner.set(data?.createOwner ?? null);
+                this.ownersService.loadOwners();
+            });
     }
 
     deleteOwner(id: string) {
         this.ownersService
             .deleteOwner(id)
-            .subscribe(() => this.ownerDeleted.set(true));
-        this.ownersService.loadOwners();
+            .subscribe(() => {
+                this.ownerDeleted.set(true);
+                this.ownersService.loadOwners();
+            });
     }
 
     updateOwnerMoney(id: string, money: number) {
         this.ownersService
             .updateOwnerMoney(id, money)
-            .subscribe(({ data }: any) =>
-                this.updatedOwner.set(data?.updateOwnerMoney ?? null)
-            );
-        this.ownersService.loadOwners();
+            .subscribe(({ data }: any) => {
+                this.updatedOwner.set(data?.updateOwnerMoney ?? null);
+                this.ownersService.loadOwners();
+            });
     }
 
     selectModeType(modeType: ModeType) {

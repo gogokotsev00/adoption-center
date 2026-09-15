@@ -38,3 +38,4 @@ out/
 
 **/.angular/
 **/node_modules/
+**/dist/
