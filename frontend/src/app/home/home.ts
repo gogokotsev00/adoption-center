@@ -1,4 +1,4 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {Component, computed, OnInit, signal} from '@angular/core';
 import {OwnersService} from "../service/owners.service";
 import {Owner} from "../graphql/types";
 
@@ -21,7 +21,7 @@ import {Owner} from "../graphql/types";
                   <div class="current-mode-title">Current mode: {{ modeType() }}</div>
                   <div class="mode-inputs">
                       @if (modeType() === ModeType.ADD_MODE) {
-                          <input #addNameInput placeholder="Name" type="text" maxlength="35" pattern="[a-zA-Z\\s]+">
+                          <input #addNameInput placeholder="Name" type="text" maxlength="35" pattern="[a-zA-Z\\s]+" required>
                           <input #addMoneyInput placeholder="0.00" type="number" step=".01" min="0" maxlength="6">
                           <button id="createOwnerBtn" (click)="createOwner(addNameInput.value, parseMoneyInput(addMoneyInput.value))">Create Owner</button>
                           <button class="clear-btn" (click)="clearAddMode(addNameInput, addMoneyInput)">Clear</button>
@@ -80,13 +80,19 @@ import {Owner} from "../graphql/types";
               <table class="owners-grid">
                   <thead>
                       <tr>
-                          <th>ID</th>
-                          <th>Name</th>
-                          <th>Money</th>
+                          <th class="sortable" (click)="toggleSort('id')">
+                              ID {{ sortColumn() === 'id' ? (sortDirection() === 'asc' ? '▲' : '▼') : '' }}
+                          </th>
+                          <th class="sortable" (click)="toggleSort('name')">
+                              Name {{ sortColumn() === 'name' ? (sortDirection() === 'asc' ? '▲' : '▼') : '' }}
+                          </th>
+                          <th class="sortable" (click)="toggleSort('money')">
+                              Money {{ sortColumn() === 'money' ? (sortDirection() === 'asc' ? '▲' : '▼') : '' }}
+                          </th>
                       </tr>
                   </thead>
                   <tbody>
-                      @for (owner of owners(); track owner.id) {
+                      @for (owner of sortedOwners(); track owner.id) {
                           <tr>
                               <td>{{ owner.id }}</td>
                               <td>{{ owner.name }}</td>
@@ -110,9 +116,27 @@ export class Home implements OnInit {
     updatedOwner = signal<Owner | null>(null);
     validationError = signal<string | null>(null);
 
+    sortColumn = signal<'id' | 'name' | 'money'>('id');
+    sortDirection = signal<'asc' | 'desc'>('asc');
+
     owners = this.ownersService.owners;
     loading = this.ownersService.loading;
     error = this.ownersService.error;
+
+    sortedOwners = computed(() => {
+        const col = this.sortColumn();
+        const dir = this.sortDirection();
+        const factor = dir === 'asc' ? 1 : -1;
+        return [...this.ownersService.owners()].sort((a, b) => {
+            if (col === 'id') {
+                return factor * (Number(a.id) - Number(b.id));
+            } else if (col === 'money') {
+                return factor * ((a.money ?? 0) - (b.money ?? 0));
+            } else {
+                return factor * (a.name ?? '').localeCompare(b.name ?? '', undefined, { sensitivity: 'base' });
+            }
+        });
+    });
 
     constructor(private ownersService: OwnersService ) {}
 
@@ -120,9 +144,23 @@ export class Home implements OnInit {
         this.ownersService.loadOwners();
     }
 
+    toggleSort(col: 'id' | 'name' | 'money') {
+        if (this.sortColumn() === col) {
+            this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+        } else {
+            this.sortColumn.set(col);
+            this.sortDirection.set('asc');
+        }
+    }
+
     createOwner(name: string, money: number) {
         this.clearResults();
-        if (!name || !/^[a-zA-Z\s]+$/.test(name.trim())) {
+        const trimmedName = name ? name.trim() : '';
+        if (trimmedName.length === 0) {
+            this.validationError.set('Name cannot be empty!');
+            return;
+        }
+        if (!/^[a-zA-Z\s]+$/.test(trimmedName)) {
             this.validationError.set('Name must contain only letters!');
             return;
         }
@@ -131,7 +169,7 @@ export class Home implements OnInit {
             return;
         }
         this.ownersService
-            .createOwner(name.trim(), money)
+            .createOwner(trimmedName, money)
             .subscribe(({ data }: any) => {
                 this.createdOwner.set(data?.createOwner ?? null);
                 this.ownersService.loadOwners();
@@ -140,7 +178,7 @@ export class Home implements OnInit {
 
     deleteOwner(id: string) {
         this.clearResults();
-        const targetOwner = this.owners().find(o => o.id === id);
+        const targetOwner = this.owners().find(o => String(o.id) === String(id));
         const ownerName = targetOwner?.name ?? '';
         this.ownersService
             .deleteOwner(id)

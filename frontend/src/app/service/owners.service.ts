@@ -23,9 +23,7 @@ export class OwnersService {
         }).subscribe({
             next: res => {
                 const rawOwners = res.data?.owners ?? [];
-                const sorted = [...rawOwners].sort((a, b) =>
-                    a.id.localeCompare(b.id, undefined, { numeric: true })
-                );
+                const sorted = [...rawOwners].sort((a, b) => Number(a.id) - Number(b.id));
                 this.owners.set(sorted);
                 this.loading.set(false);
             },
@@ -40,17 +38,17 @@ export class OwnersService {
         });
     }
 
-    deleteOwner(id: string) {
+    deleteOwner(id: number | string) {
         return this.apollo.mutate({
             mutation: DELETE_OWNER_MUTATION,
-            variables: { id }
+            variables: { id: String(id) }
         });
     }
 
-    updateOwnerMoney(id: string, money: number) {
+    updateOwnerMoney(id: number | string, money: number) {
         return this.apollo.mutate({
             mutation: UPDATE_OWNER_MONEY_MUTATION,
-            variables: { id, money }
+            variables: { id: String(id), money }
         });
     }
 }

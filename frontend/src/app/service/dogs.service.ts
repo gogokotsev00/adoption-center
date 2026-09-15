@@ -19,9 +19,7 @@ export class DogsService {
         }).subscribe({
             next: res => {
                 const rawDogs = res.data?.dogs ?? [];
-                const sorted = [...rawDogs].sort((a, b) =>
-                    a.id.localeCompare(b.id, undefined, { numeric: true })
-                );
+                const sorted = [...rawDogs].sort((a, b) => Number(a.id) - Number(b.id));
                 this.dogs.set(sorted);
                 this.loading.set(false);
             },

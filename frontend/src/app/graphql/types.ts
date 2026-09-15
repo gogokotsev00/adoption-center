@@ -1,11 +1,11 @@
 export type Owner = {
-    readonly id: string;
+    readonly id: number;
     name: string;
     money?: number;
 };
 
 export type Dog = {
-    readonly id: string;
+    readonly id: number;
     name: string;
     age: number;
     owner?: Owner;

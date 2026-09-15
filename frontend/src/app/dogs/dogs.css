@@ -102,6 +102,13 @@ button {
     border-bottom: 2px solid var(--primary-color, #605DC8);
     border-radius: 6px;
 }
+.dogs-grid th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+.dogs-grid th.sortable:hover {
+    background: #dcd9f8;
+}
 .dogs-grid td {
     border-bottom: 1px solid #f0f0f0;
 }
