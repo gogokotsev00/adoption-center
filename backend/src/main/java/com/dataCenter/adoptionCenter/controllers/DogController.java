@@ -1,6 +1,7 @@
 package com.dataCenter.adoptionCenter.controllers;
 
 import com.dataCenter.adoptionCenter.entities.Dog;
+import com.dataCenter.adoptionCenter.entities.DogStatus;
 import com.dataCenter.adoptionCenter.entities.Owner;
 import com.dataCenter.adoptionCenter.services.DogService;
 import com.dataCenter.adoptionCenter.services.OwnerService;
@@ -38,9 +39,24 @@ public class DogController {
 	}
 
 	@MutationMapping
-	public Dog createDog(@Argument String name, @Argument int age, @Argument long ownerId) {
-		Owner owner = ownerService.getOwnerById(ownerId);
-		Dog dog = new Dog().withAge(age).withName(name).withOwner(owner);
+	public Dog createDog(@Argument String name,
+	                     @Argument int age,
+	                     @Argument(name = "ownerId") Long ownerId,
+	                     @Argument(name = "fee") Double fee,
+	                     @Argument(name = "status") DogStatus status) {
+		Owner owner = null;
+		if (ownerId != null) {
+			owner = ownerService.getOwnerById(ownerId);
+		}
+		double actualFee = (fee != null) ? fee : 0.0;
+		DogStatus actualStatus = (status != null) ? status : (owner != null ? DogStatus.ADOPTED : DogStatus.AVAILABLE);
+
+		Dog dog = new Dog()
+				.withAge(age)
+				.withName(name)
+				.withFee(actualFee)
+				.withStatus(actualStatus)
+				.withOwner(owner);
 		return dogService.createDog(dog);
 	}
 }

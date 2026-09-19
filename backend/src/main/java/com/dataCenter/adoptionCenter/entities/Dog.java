@@ -22,7 +22,14 @@ public class Dog {
 	@Column(name = "dog_age", nullable = false)
 	int age;
 
+	@Column(name = "dog_fee", nullable = false)
+	double fee;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "dog_status", nullable = false, length = 35)
+	DogStatus status = DogStatus.AVAILABLE;
+
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="dog_owner_id", referencedColumnName = "owner_id", nullable = false)
+	@JoinColumn(name = "dog_owner_id", referencedColumnName = "owner_id")
 	Owner owner;
 }

@@ -1,5 +1,5 @@
 import {gql, TypedDocumentNode} from 'apollo-angular';
-import {Dog} from "./types";
+import {Dog, DogStatus} from "./types";
 
 export const DOGS_QUERY: TypedDocumentNode<GetDogsResult, GetDogsVariables> = gql`
   query Dogs {
@@ -7,20 +7,27 @@ export const DOGS_QUERY: TypedDocumentNode<GetDogsResult, GetDogsVariables> = gq
       id
       name
       age
+      fee
+      status
       owner {
+        id
         name
+        money
       }
     }
   }
 `;
 
 export const CREATE_DOG_MUTATION: TypedDocumentNode<CreateDogResult, CreateDogVariables> = gql`
-  mutation CreateDog($name: String!, $age: Int!, $ownerId: ID!) {
-    createDog(name: $name, age: $age, ownerId: $ownerId) {
+  mutation CreateDog($name: String!, $age: Int!, $ownerId: ID, $fee: Float, $status: DogStatus) {
+    createDog(name: $name, age: $age, ownerId: $ownerId, fee: $fee, status: $status) {
       id
       name
       age
+      fee
+      status
       owner {
+        id
         name
       }
     }
@@ -40,5 +47,7 @@ interface CreateDogResult {
 interface CreateDogVariables {
     name: string;
     age: number;
-    ownerId: string;
+    ownerId?: string | null;
+    fee?: number | null;
+    status?: DogStatus | null;
 }

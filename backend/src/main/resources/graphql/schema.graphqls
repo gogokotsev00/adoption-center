@@ -1,8 +1,22 @@
+enum DogStatus {
+    AVAILABLE
+    PENDING
+    ADOPTED
+}
+
+enum ApplicationStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
 type Dog {
     id: ID!
     name: String!
     age: Int!
-    owner: Owner!
+    fee: Float!
+    status: DogStatus!
+    owner: Owner
 }
 
 type Owner {
@@ -11,17 +25,31 @@ type Owner {
     money: Float!
 }
 
+type AdoptionApplication {
+    id: ID!
+    owner: Owner!
+    dog: Dog!
+    status: ApplicationStatus!
+    createdAt: String
+}
+
 type Query {
     dogs: [Dog]
     dogById(id: ID!): Dog
     dogsByOwnerId(ownerId: ID!): [Dog]
     owners: [Owner]
     ownerById(id: ID!): Owner
+    applications: [AdoptionApplication]
+    applicationById(id: ID!): AdoptionApplication
+    applicationsByOwnerId(ownerId: ID!): [AdoptionApplication]
 }
 
 type Mutation {
-    createDog(name: String!, age: Int!, ownerId: ID!): Dog!
+    createDog(name: String!, age: Int!, ownerId: ID, fee: Float, status: DogStatus): Dog!
     createOwner(name: String!, money: Float!): Owner!
     deleteOwnerById(id: ID!): Int!
     updateOwnerMoney(id: ID!, money: Float!): Owner!
+    createAdoptionApplication(ownerId: ID!, dogId: ID!): AdoptionApplication!
+    approveAdoptionApplication(id: ID!): AdoptionApplication!
+    rejectAdoptionApplication(id: ID!): AdoptionApplication!
 }

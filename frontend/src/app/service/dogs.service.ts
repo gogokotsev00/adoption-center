@@ -27,10 +27,16 @@ export class DogsService {
         });
     }
 
-    addDog(name: string, age: number, ownerId: string) {
+    addDog(name: string, age: number, ownerId?: string | null, fee?: number | null) {
         return this.apollo.mutate({
             mutation: CREATE_DOG_MUTATION,
-            variables: { name, age, ownerId },
+            variables: {
+                name,
+                age,
+                ownerId: ownerId && ownerId.trim().length > 0 ? ownerId : null,
+                fee: fee != null ? fee : 0,
+                status: ownerId && ownerId.trim().length > 0 ? 'ADOPTED' : 'AVAILABLE'
+            },
             refetchQueries: [OWNERS_QUERY, DOGS_QUERY],
         });
     }

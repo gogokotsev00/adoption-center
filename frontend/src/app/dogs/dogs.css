@@ -30,6 +30,7 @@ button {
     color: white;
     border-radius: 8px;
     cursor: pointer;
+    font-weight: 500;
 }
 #addDogButton {
     background-color: var(--primary-color, #605DC8);
@@ -73,13 +74,14 @@ button {
     justify-content: center;
     margin-top: 20px;
     width: 100%;
+    overflow-x: auto;
 }
 .dogs-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(100px, 1fr));
-    gap: 8px 16px;
+    grid-template-columns: 60px 1.2fr 70px 85px 110px 1.2fr 130px;
+    gap: 8px 12px;
     width: 100%;
-    max-width: 650px;
+    max-width: 950px;
     margin: 0 auto;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -89,7 +91,7 @@ button {
     display: contents;
 }
 .dogs-grid th, .dogs-grid td {
-    padding: 12px 16px;
+    padding: 10px 8px;
     text-align: center;
     display: flex;
     align-items: center;
@@ -111,4 +113,76 @@ button {
 }
 .dogs-grid td {
     border-bottom: 1px solid #f0f0f0;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.badge-available {
+    background: #e8f8f5;
+    color: #1e8449;
+    border: 1px solid #a3e4d7;
+}
+.badge-pending {
+    background: #fef5d1;
+    color: #b78103;
+    border: 1px solid #f9e29a;
+}
+.badge-adopted {
+    background: #ebedf0;
+    color: #596275;
+    border: 1px solid #d2d7de;
+}
+
+.adopt-btn {
+    padding: 6px 12px;
+    background-color: #27ae60;
+    border: 1px solid #27ae60;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+}
+.adopt-btn:hover {
+    background-color: #219653;
+}
+
+/* Modal styling for Adopt Dialog */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 440px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.modal-content h3 {
+    margin: 0;
+    color: var(--primary-color, #605DC8);
+}
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
 }
