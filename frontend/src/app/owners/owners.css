@@ -1,4 +1,4 @@
-.home-container {
+.owners-container {
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -27,6 +27,46 @@ input[type="text"], input[type="number"], select {
     border: 1px solid var(--primary-color);
     padding: 10px;
     border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(96, 93, 200, 0.2);
+}
+.mode-select {
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary-color, #605DC8);
+    background-color: #ffffff;
+    border: 2px solid var(--primary-color, #605DC8);
+    border-radius: 10px;
+    padding: 12px 28px;
+    min-width: 220px;
+    text-align: center;
+    text-align-last: center;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 8px rgba(96, 93, 200, 0.12);
+}
+.mode-select option,
+.mode-select-container option {
+    text-align: center;
+    text-align-last: center;
+}
+.mode-select:hover {
+    background-color: var(--accent-color, #e8e7fa);
+    border-color: var(--primary-color, #605DC8);
+    box-shadow: 0 4px 16px rgba(96, 93, 200, 0.25);
+    transform: translateY(-2px);
+}
+.mode-select:focus,
+.mode-select:focus-visible {
+    outline: none;
+    background-color: #ffffff;
+    border-color: var(--primary-color, #605DC8);
+    box-shadow: 0 0 0 3px rgba(96, 93, 200, 0.3), 0 4px 16px rgba(96, 93, 200, 0.2);
+    transform: translateY(-2px);
 }
 button {
     padding: 10px 16px;
@@ -35,10 +75,22 @@ button {
     color: white;
     border-radius: 8px;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+button:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(96, 93, 200, 0.25);
+}
+button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(96, 93, 200, 0.35);
 }
 .clear-btn { background: #7f8c8d; border-color: #7f8c8d; }
-.clear-btn:hover { background: #95a5a6; }
+.clear-btn:hover { background: #95a5a6; border-color: #95a5a6; box-shadow: 0 3px 10px rgba(127, 140, 141, 0.3); }
 #backButton { background: #e74c3c; border-color: #e74c3c; }
+#backButton:hover { background: #c0392b; border-color: #c0392b; box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3); }
 .result-message-container {
     margin-top: 4px;
     min-height: 28px;

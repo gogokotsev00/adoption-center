@@ -13,7 +13,7 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
     </main>
 
     <nav>
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Owners</a>
       <a routerLink="/dogs" routerLinkActive="active">Dogs</a>
       <a routerLink="/applications" routerLinkActive="active">Applications</a>
     </nav>
@@ -23,5 +23,5 @@ import {RouterLink, RouterLinkActive, RouterOutlet} from "@angular/router";
   styleUrls: ['./app.css'],
 })
 export class App {
-  title = 'homes';
+  title = 'adoption-center';
 }

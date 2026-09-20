@@ -64,7 +64,7 @@ import {ApplicationsService} from "../service/applications.service";
                         </tr>
                     </thead>
                     <tbody>
-                        @for (dog of sortedDogs(); track dog.id) {
+                        @for (dog of paginatedDogs(); track dog.id) {
                             <tr>
                                 <td>{{ dog.id }}</td>
                                 <td>{{ dog.name }}</td>
@@ -89,6 +89,40 @@ import {ApplicationsService} from "../service/applications.service";
                         }
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-bar dogs-pagination">
+                <div class="pagination-page-size">
+                    <label for="dogPageSizeSelect">Rows per page:</label>
+                    <select id="dogPageSizeSelect" [value]="pageSize()" (change)="setPageSize(Number($any($event.target).value))">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                    </select>
+                </div>
+
+                <div class="pagination-info">
+                    @if (totalItems() === 0) {
+                        Showing 0 dogs
+                    } @else {
+                        Showing {{ startItem() }}–{{ endItem() }} of {{ totalItems() }} dogs
+                    }
+                </div>
+
+                @if (totalPages() > 1) {
+                    <div class="pagination-controls">
+                        <button class="page-btn prev-btn" [disabled]="effectivePage() === 1" (click)="goToPage(effectivePage() - 1)">‹ Prev</button>
+                        @for (p of totalPagesArray(); track $index) {
+                            @if (p === '...') {
+                                <span class="pagination-ellipsis">…</span>
+                            } @else {
+                                <button class="page-btn page-num-btn" [class.active]="p === effectivePage()" (click)="goToPage(+p)">{{ p }}</button>
+                            }
+                        }
+                        <button class="page-btn next-btn" [disabled]="effectivePage() === totalPages()" (click)="goToPage(effectivePage() + 1)">Next ›</button>
+                    </div>
+                }
             </div>
 
             <!-- Adopt Modal Dialog -->
@@ -140,6 +174,9 @@ export class Dogs implements OnInit {
     sortColumn = signal<'id' | 'name' | 'age' | 'fee' | 'status' | 'owner'>('id');
     sortDirection = signal<'asc' | 'desc'>('asc');
 
+    pageSize = signal<number>(10);
+    currentPage = signal<number>(1);
+
     sortedDogs = computed(() => {
         const col = this.sortColumn();
         const dir = this.sortDirection();
@@ -163,6 +200,54 @@ export class Dogs implements OnInit {
         });
     });
 
+    totalPages = computed(() => {
+        const count = this.sortedDogs().length;
+        return Math.max(1, Math.ceil(count / this.pageSize()));
+    });
+
+    effectivePage = computed(() => {
+        return Math.min(Math.max(1, this.currentPage()), this.totalPages());
+    });
+
+    paginatedDogs = computed(() => {
+        const all = this.sortedDogs();
+        const size = this.pageSize();
+        const page = this.effectivePage();
+        const start = (page - 1) * size;
+        return all.slice(start, start + size);
+    });
+
+    totalItems = computed(() => this.sortedDogs().length);
+
+    startItem = computed(() => {
+        if (this.totalItems() === 0) return 0;
+        return (this.effectivePage() - 1) * this.pageSize() + 1;
+    });
+
+    endItem = computed(() => {
+        return Math.min(this.effectivePage() * this.pageSize(), this.totalItems());
+    });
+
+    totalPagesArray = computed(() => {
+        const total = this.totalPages();
+        const current = this.effectivePage();
+        if (total <= 7) {
+            return Array.from({ length: total }, (_, i) => i + 1);
+        }
+        const pages: (number | string)[] = [];
+        const left = Math.max(2, current - 1);
+        const right = Math.min(total - 1, current + 1);
+
+        pages.push(1);
+        if (left > 2) pages.push('...');
+        for (let i = left; i <= right; i++) {
+            pages.push(i);
+        }
+        if (right < total - 1) pages.push('...');
+        pages.push(total);
+        return pages;
+    });
+
     constructor(private ownersService: OwnersService,
                 private dogsService: DogsService,
                 private applicationsService: ApplicationsService) {
@@ -173,6 +258,17 @@ export class Dogs implements OnInit {
         this.dogsService.loadDogs();
     }
 
+    goToPage(page: number) {
+        if (page >= 1 && page <= this.totalPages()) {
+            this.currentPage.set(page);
+        }
+    }
+
+    setPageSize(size: number) {
+        this.pageSize.set(size);
+        this.currentPage.set(1);
+    }
+
     toggleSort(col: 'id' | 'name' | 'age' | 'fee' | 'status' | 'owner') {
         if (this.sortColumn() === col) {
             this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
@@ -180,6 +276,7 @@ export class Dogs implements OnInit {
             this.sortColumn.set(col);
             this.sortDirection.set('asc');
         }
+        this.currentPage.set(1);
     }
 
     addDog(name: string, age: number, fee: number) {

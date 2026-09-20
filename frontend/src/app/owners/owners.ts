@@ -3,13 +3,13 @@ import {OwnersService} from "../service/owners.service";
 import {Owner} from "../graphql/types";
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-owners',
   imports: [],
   template: `
-      <div class="home-container">
+      <div class="owners-container">
           @if (!modeSelected()) {
               <div class="mode-select-container">
-                  <select #modeTypeSelect (change)="selectModeType($any($event.target).value)">
+                  <select #modeTypeSelect id="modeTypeSelect" class="mode-select" (change)="selectModeType($any($event.target).value)">
                       <option value="" disabled selected>Select mode</option>
                       @for (mode of Object.values(ModeType); track mode) {
                           <option [value]="mode">{{ mode }}</option>
@@ -92,7 +92,7 @@ import {Owner} from "../graphql/types";
                       </tr>
                   </thead>
                   <tbody>
-                      @for (owner of sortedOwners(); track owner.id) {
+                      @for (owner of paginatedOwners(); track owner.id) {
                           <tr>
                               <td>{{ owner.id }}</td>
                               <td>{{ owner.name }}</td>
@@ -102,12 +102,46 @@ import {Owner} from "../graphql/types";
                   </tbody>
               </table>
           </div>
+
+          <!-- Pagination Controls -->
+          <div class="pagination-bar owners-pagination">
+              <div class="pagination-page-size">
+                  <label for="ownerPageSizeSelect">Rows per page:</label>
+                  <select id="ownerPageSizeSelect" [value]="pageSize()" (change)="setPageSize(Number($any($event.target).value))">
+                      <option [value]="10">10</option>
+                      <option [value]="25">25</option>
+                      <option [value]="50">50</option>
+                  </select>
+              </div>
+
+              <div class="pagination-info">
+                  @if (totalItems() === 0) {
+                      Showing 0 owners
+                  } @else {
+                      Showing {{ startItem() }}–{{ endItem() }} of {{ totalItems() }} owners
+                  }
+              </div>
+
+              @if (totalPages() > 1) {
+                  <div class="pagination-controls">
+                      <button class="page-btn prev-btn" [disabled]="effectivePage() === 1" (click)="goToPage(effectivePage() - 1)">‹ Prev</button>
+                      @for (p of totalPagesArray(); track $index) {
+                          @if (p === '...') {
+                              <span class="pagination-ellipsis">…</span>
+                          } @else {
+                              <button class="page-btn page-num-btn" [class.active]="p === effectivePage()" (click)="goToPage(+p)">{{ p }}</button>
+                          }
+                      }
+                      <button class="page-btn next-btn" [disabled]="effectivePage() === totalPages()" (click)="goToPage(effectivePage() + 1)">Next ›</button>
+                  </div>
+              }
+          </div>
       </div>
   `,
-  styleUrl: 'home.css'
+  styleUrl: './owners.css'
 })
 
-export class Home implements OnInit {
+export class Owners implements OnInit {
     modeSelected = signal(false);
     modeType = signal<ModeType | ''>('');
     ownerDeleted = signal(false);
@@ -118,6 +152,9 @@ export class Home implements OnInit {
 
     sortColumn = signal<'id' | 'name' | 'money'>('id');
     sortDirection = signal<'asc' | 'desc'>('asc');
+
+    pageSize = signal<number>(10);
+    currentPage = signal<number>(1);
 
     owners = this.ownersService.owners;
     loading = this.ownersService.loading;
@@ -138,10 +175,69 @@ export class Home implements OnInit {
         });
     });
 
+    totalPages = computed(() => {
+        const count = this.sortedOwners().length;
+        return Math.max(1, Math.ceil(count / this.pageSize()));
+    });
+
+    effectivePage = computed(() => {
+        return Math.min(Math.max(1, this.currentPage()), this.totalPages());
+    });
+
+    paginatedOwners = computed(() => {
+        const all = this.sortedOwners();
+        const size = this.pageSize();
+        const page = this.effectivePage();
+        const start = (page - 1) * size;
+        return all.slice(start, start + size);
+    });
+
+    totalItems = computed(() => this.sortedOwners().length);
+
+    startItem = computed(() => {
+        if (this.totalItems() === 0) return 0;
+        return (this.effectivePage() - 1) * this.pageSize() + 1;
+    });
+
+    endItem = computed(() => {
+        return Math.min(this.effectivePage() * this.pageSize(), this.totalItems());
+    });
+
+    totalPagesArray = computed(() => {
+        const total = this.totalPages();
+        const current = this.effectivePage();
+        if (total <= 7) {
+            return Array.from({ length: total }, (_, i) => i + 1);
+        }
+        const pages: (number | string)[] = [];
+        const left = Math.max(2, current - 1);
+        const right = Math.min(total - 1, current + 1);
+
+        pages.push(1);
+        if (left > 2) pages.push('...');
+        for (let i = left; i <= right; i++) {
+            pages.push(i);
+        }
+        if (right < total - 1) pages.push('...');
+        pages.push(total);
+        return pages;
+    });
+
     constructor(private ownersService: OwnersService ) {}
 
     ngOnInit() {
         this.ownersService.loadOwners();
+    }
+
+    goToPage(page: number) {
+        if (page >= 1 && page <= this.totalPages()) {
+            this.currentPage.set(page);
+        }
+    }
+
+    setPageSize(size: number) {
+        this.pageSize.set(size);
+        this.currentPage.set(1);
     }
 
     toggleSort(col: 'id' | 'name' | 'money') {
@@ -151,6 +247,7 @@ export class Home implements OnInit {
             this.sortColumn.set(col);
             this.sortDirection.set('asc');
         }
+        this.currentPage.set(1);
     }
 
     createOwner(name: string, money: number) {

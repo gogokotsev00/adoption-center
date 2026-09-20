@@ -21,3 +21,103 @@ button.primary {
   color: white;
   border-radius: 8px;
 }
+
+/* Shared Pagination Styles */
+.pagination-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 16px auto 0 auto;
+  padding: 4px 0;
+  font-size: 14px;
+  color: #4a4a4a;
+}
+
+.dogs-pagination {
+  max-width: 950px;
+}
+
+.owners-pagination {
+  max-width: 650px;
+}
+
+.pagination-page-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-page-size select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--primary-color, #605DC8);
+  font-size: 14px;
+  cursor: pointer;
+  background: white;
+  color: #333;
+}
+
+.pagination-info {
+  font-weight: 500;
+  color: #555;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+button.page-btn {
+  padding: 6px 12px !important;
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dcd9f8 !important;
+  background: white !important;
+  color: var(--primary-color, #605DC8) !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  transition: all 0.15s ease-in-out;
+}
+
+button.page-btn:hover:not(:disabled) {
+  background: var(--accent-color, #e8e7fa) !important;
+  border-color: var(--primary-color, #605DC8) !important;
+  color: var(--primary-color, #605DC8) !important;
+}
+
+button.page-btn.active {
+  background: var(--primary-color, #605DC8) !important;
+  color: white !important;
+  border-color: var(--primary-color, #605DC8) !important;
+}
+
+button.page-btn:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  background: #f5f5f5 !important;
+  border-color: #e0e0e0 !important;
+  color: #999 !important;
+}
+
+.pagination-ellipsis {
+  padding: 0 4px;
+  color: #888;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .pagination-bar {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
