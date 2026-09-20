@@ -1,7 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import { CREATE_DOG_MUTATION, DOGS_QUERY } from '../graphql/dogs.graphql';
-import { OWNERS_QUERY } from "../graphql/owner.graphql";
 import { Dog } from '../graphql/types';
 
 @Injectable({ providedIn: 'root' })
@@ -27,17 +26,16 @@ export class DogsService {
         });
     }
 
-    addDog(name: string, age: number, ownerId?: string | null, fee?: number | null) {
+    addDog(name: string, age: number, fee?: number | null) {
         return this.apollo.mutate({
             mutation: CREATE_DOG_MUTATION,
             variables: {
                 name,
                 age,
-                ownerId: ownerId && ownerId.trim().length > 0 ? ownerId : null,
                 fee: fee != null ? fee : 0,
-                status: ownerId && ownerId.trim().length > 0 ? 'ADOPTED' : 'AVAILABLE'
+                status: 'AVAILABLE'
             },
-            refetchQueries: [OWNERS_QUERY, DOGS_QUERY],
+            refetchQueries: [DOGS_QUERY],
         });
     }
 }

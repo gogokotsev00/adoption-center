@@ -45,7 +45,7 @@ type Query {
 }
 
 type Mutation {
-    createDog(name: String!, age: Int!, ownerId: ID, fee: Float, status: DogStatus): Dog!
+    createDog(name: String!, age: Int!, fee: Float, status: DogStatus): Dog!
     createOwner(name: String!, money: Float!): Owner!
     deleteOwnerById(id: ID!): Int!
     updateOwnerMoney(id: ID!, money: Float!): Owner!

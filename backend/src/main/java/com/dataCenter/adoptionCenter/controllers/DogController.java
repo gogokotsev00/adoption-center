@@ -2,9 +2,7 @@ package com.dataCenter.adoptionCenter.controllers;
 
 import com.dataCenter.adoptionCenter.entities.Dog;
 import com.dataCenter.adoptionCenter.entities.DogStatus;
-import com.dataCenter.adoptionCenter.entities.Owner;
 import com.dataCenter.adoptionCenter.services.DogService;
-import com.dataCenter.adoptionCenter.services.OwnerService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -16,11 +14,9 @@ import java.util.List;
 public class DogController {
 
 	private final DogService dogService;
-	private final OwnerService ownerService;
 
-	public DogController(DogService dogService, OwnerService ownerService) {
+	public DogController(DogService dogService) {
 		this.dogService = dogService;
-		this.ownerService = ownerService;
 	}
 
 	@QueryMapping
@@ -41,22 +37,16 @@ public class DogController {
 	@MutationMapping
 	public Dog createDog(@Argument String name,
 	                     @Argument int age,
-	                     @Argument(name = "ownerId") Long ownerId,
 	                     @Argument(name = "fee") Double fee,
 	                     @Argument(name = "status") DogStatus status) {
-		Owner owner = null;
-		if (ownerId != null) {
-			owner = ownerService.getOwnerById(ownerId);
-		}
 		double actualFee = (fee != null) ? fee : 0.0;
-		DogStatus actualStatus = (status != null) ? status : (owner != null ? DogStatus.ADOPTED : DogStatus.AVAILABLE);
+		DogStatus actualStatus = (status != null) ? status : DogStatus.AVAILABLE;
 
 		Dog dog = new Dog()
 				.withAge(age)
 				.withName(name)
 				.withFee(actualFee)
-				.withStatus(actualStatus)
-				.withOwner(owner);
+				.withStatus(actualStatus);
 		return dogService.createDog(dog);
 	}
 }

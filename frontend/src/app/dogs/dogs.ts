@@ -14,17 +14,9 @@ import {ApplicationsService} from "../service/applications.service";
                     <input #dogNameInput type="text" placeholder="Dog's name" maxlength="35" pattern="[a-zA-Z\\s]+" required>
                     <input #dogAgeInput type="number" placeholder="Age (years)" min="0" max="99">
                     <input #dogFeeInput type="number" placeholder="Adoption fee ($)" min="0" step="0.01">
-                    <select #dogOwnerSelect>
-                        <option value="">No Owner (Available for Adoption)</option>
-                        @if (owners() && owners().length > 0) {
-                            @for (owner of owners(); track owner.id) {
-                                <option value="{{ owner.id }}">{{ owner.name }} (\${{ owner.money ?? 0 }})</option>
-                            }
-                        }
-                    </select>
 
-                    <button id="addDogButton" (click)="addDog(dogNameInput.value, Number(dogAgeInput.value), Number(dogFeeInput.value), dogOwnerSelect.value)">Add Dog</button>
-                    <button class="clear-btn" (click)="clearAddDogMode(dogNameInput, dogAgeInput, dogFeeInput, dogOwnerSelect)">Clear</button>
+                    <button id="addDogButton" (click)="addDog(dogNameInput.value, Number(dogAgeInput.value), Number(dogFeeInput.value))">Add Dog</button>
+                    <button class="clear-btn" (click)="clearAddDogMode(dogNameInput, dogAgeInput, dogFeeInput)">Clear</button>
                 </div>
 
                 <div class="result-message-container">
@@ -190,7 +182,7 @@ export class Dogs implements OnInit {
         }
     }
 
-    addDog(name: string, age: number, fee: number, ownerId: string) {
+    addDog(name: string, age: number, fee: number) {
         this.clearResults();
         const trimmedName = name ? name.trim() : '';
         if (trimmedName.length === 0) {
@@ -208,7 +200,7 @@ export class Dogs implements OnInit {
         const actualFee = isNaN(fee) || fee < 0 ? 0 : fee;
 
         this.dogsService
-            .addDog(trimmedName, age, ownerId ? ownerId : null, actualFee)
+            .addDog(trimmedName, age, actualFee)
             .subscribe({
                 next: ({data}: any) => {
                     const created = data?.createDog;
@@ -221,11 +213,10 @@ export class Dogs implements OnInit {
             });
     }
 
-    clearAddDogMode(nameInput: HTMLInputElement, ageInput: HTMLInputElement, feeInput: HTMLInputElement, ownerSelect: HTMLSelectElement) {
+    clearAddDogMode(nameInput: HTMLInputElement, ageInput: HTMLInputElement, feeInput: HTMLInputElement) {
         nameInput.value = '';
         ageInput.value = '';
         feeInput.value = '';
-        ownerSelect.value = '';
         this.clearResults();
     }
 
