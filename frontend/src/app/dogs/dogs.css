@@ -186,3 +186,8 @@ button {
     gap: 10px;
     margin-top: 10px;
 }
+
+
+.dog-age-input {
+    width: 6rem;
+}

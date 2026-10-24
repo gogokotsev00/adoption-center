@@ -12,7 +12,7 @@ import {ApplicationsService} from "../service/applications.service";
             <div class="dog-action-container">
                 <div class="dog-inputs">
                     <input #dogNameInput type="text" placeholder="Dog's name" maxlength="35" pattern="[a-zA-Z\\s]+" required>
-                    <input #dogAgeInput type="number" placeholder="Age (years)" min="0" max="99">
+                    <input #dogAgeInput class="dog-age-input" type="number" placeholder="Age (years)" min="0" max="99">
                     <input #dogFeeInput type="number" placeholder="Adoption fee ($)" min="0" step="0.01">
 
                     <button id="addDogButton" (click)="addDog(dogNameInput.value, Number(dogAgeInput.value), Number(dogFeeInput.value))">Add Dog</button>
