@@ -4,13 +4,17 @@ import com.dataCenter.adoptionCenter.entities.AdoptionApplication;
 import com.dataCenter.adoptionCenter.entities.ApplicationStatus;
 import com.dataCenter.adoptionCenter.entities.Dog;
 import com.dataCenter.adoptionCenter.entities.DogStatus;
+import com.dataCenter.adoptionCenter.entities.NotificationEventType;
 import com.dataCenter.adoptionCenter.entities.Owner;
+import com.dataCenter.adoptionCenter.kafka.AdoptionNotificationEvent;
+import com.dataCenter.adoptionCenter.kafka.NotificationEventProducer;
 import com.dataCenter.adoptionCenter.repositories.AdoptionApplicationRepository;
 import com.dataCenter.adoptionCenter.repositories.DogRepository;
 import com.dataCenter.adoptionCenter.repositories.OwnerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,6 +34,9 @@ class AdoptionApplicationServiceTest {
 
 	@Mock
 	private OwnerRepository ownerRepository;
+
+	@Mock
+	private NotificationEventProducer notificationEventProducer;
 
 	@InjectMocks
 	private AdoptionApplicationService applicationService;
@@ -56,6 +63,7 @@ class AdoptionApplicationServiceTest {
 		assertEquals(DogStatus.PENDING, dog.getStatus());
 		verify(dogRepository).save(dog);
 		verify(applicationRepository).save(any(AdoptionApplication.class));
+		verifyNoInteractions(notificationEventProducer);
 	}
 
 	@Test
@@ -65,6 +73,7 @@ class AdoptionApplicationServiceTest {
 		when(dogRepository.findById(10L)).thenReturn(dog);
 
 		assertThrows(IllegalStateException.class, () -> applicationService.createApplication(1L, 10L));
+		verifyNoInteractions(notificationEventProducer);
 	}
 
 	@Test
@@ -86,6 +95,19 @@ class AdoptionApplicationServiceTest {
 		assertEquals(owner, dog.getOwner());
 		verify(ownerRepository).save(owner);
 		verify(dogRepository).save(dog);
+
+		ArgumentCaptor<AdoptionNotificationEvent> eventCaptor = ArgumentCaptor.forClass(AdoptionNotificationEvent.class);
+		verify(notificationEventProducer).sendEvent(eventCaptor.capture());
+		AdoptionNotificationEvent publishedEvent = eventCaptor.getValue();
+		assertEquals(NotificationEventType.DOG_PURCHASE_COMPLETED, publishedEvent.eventType());
+		assertEquals(100L, publishedEvent.applicationId());
+		assertEquals(1L, publishedEvent.ownerId());
+		assertEquals("Alice", publishedEvent.ownerName());
+		assertEquals(10L, publishedEvent.dogId());
+		assertEquals("Buddy", publishedEvent.dogName());
+		assertEquals(50.0, publishedEvent.fee());
+		assertEquals(150.0, publishedEvent.remainingMoney());
+		assertNotNull(publishedEvent.occurredAt());
 	}
 
 	@Test
@@ -100,6 +122,7 @@ class AdoptionApplicationServiceTest {
 		when(applicationRepository.findById(100L)).thenReturn(app);
 
 		assertThrows(IllegalStateException.class, () -> applicationService.approveApplication(100L));
+		verifyNoInteractions(notificationEventProducer);
 	}
 
 	@Test
@@ -119,5 +142,6 @@ class AdoptionApplicationServiceTest {
 		assertEquals(ApplicationStatus.REJECTED, rejected.getStatus());
 		assertEquals(DogStatus.AVAILABLE, dog.getStatus());
 		verify(dogRepository).save(dog);
+		verifyNoInteractions(notificationEventProducer);
 	}
 }

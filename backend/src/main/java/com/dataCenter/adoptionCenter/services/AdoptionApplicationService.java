@@ -4,7 +4,10 @@ import com.dataCenter.adoptionCenter.entities.AdoptionApplication;
 import com.dataCenter.adoptionCenter.entities.ApplicationStatus;
 import com.dataCenter.adoptionCenter.entities.Dog;
 import com.dataCenter.adoptionCenter.entities.DogStatus;
+import com.dataCenter.adoptionCenter.entities.NotificationEventType;
 import com.dataCenter.adoptionCenter.entities.Owner;
+import com.dataCenter.adoptionCenter.kafka.AdoptionNotificationEvent;
+import com.dataCenter.adoptionCenter.kafka.NotificationEventProducer;
 import com.dataCenter.adoptionCenter.repositories.AdoptionApplicationRepository;
 import com.dataCenter.adoptionCenter.repositories.DogRepository;
 import com.dataCenter.adoptionCenter.repositories.OwnerRepository;
@@ -20,13 +23,16 @@ public class AdoptionApplicationService {
 	private final AdoptionApplicationRepository applicationRepository;
 	private final DogRepository dogRepository;
 	private final OwnerRepository ownerRepository;
+	private final NotificationEventProducer notificationEventProducer;
 
 	public AdoptionApplicationService(AdoptionApplicationRepository applicationRepository,
-	                                 DogRepository dogRepository,
-	                                 OwnerRepository ownerRepository) {
+	                                  DogRepository dogRepository,
+	                                  OwnerRepository ownerRepository,
+	                                  NotificationEventProducer notificationEventProducer) {
 		this.applicationRepository = applicationRepository;
 		this.dogRepository = dogRepository;
 		this.ownerRepository = ownerRepository;
+		this.notificationEventProducer = notificationEventProducer;
 	}
 
 	public List<AdoptionApplication> getAllApplications() {
@@ -95,7 +101,21 @@ public class AdoptionApplicationService {
 		dogRepository.save(dog);
 
 		application.setStatus(ApplicationStatus.APPROVED);
-		return applicationRepository.save(application);
+		AdoptionApplication savedApplication = applicationRepository.save(application);
+
+		notificationEventProducer.sendEvent(new AdoptionNotificationEvent(
+				NotificationEventType.DOG_PURCHASE_COMPLETED,
+				savedApplication.getId(),
+				owner.getId(),
+				owner.getName(),
+				dog.getId(),
+				dog.getName(),
+				dog.getFee(),
+				owner.getMoney(),
+				LocalDateTime.now().toString()
+		));
+
+		return savedApplication;
 	}
 
 	@Transactional

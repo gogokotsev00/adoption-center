@@ -1,5 +1,6 @@
 import {Component, computed, OnInit, signal} from '@angular/core';
 import {ApplicationsService} from '../service/applications.service';
+import {NotificationsService} from '../service/notifications.service';
 import {ApplicationStatus} from '../graphql/types';
 
 @Component({
@@ -99,7 +100,10 @@ export class Applications implements OnInit {
         return all.filter(a => a.status === currentFilter);
     });
 
-    constructor(private applicationsService: ApplicationsService) {}
+    constructor(
+        private applicationsService: ApplicationsService,
+        private notificationsService: NotificationsService
+    ) {}
 
     ngOnInit() {
         this.applicationsService.loadApplications();
@@ -119,8 +123,9 @@ export class Applications implements OnInit {
         this.clearMessages();
         this.applicationsService.approveApplication(String(id)).subscribe({
             next: () => {
-                this.successMessage.set(`Application #${id} approved successfully!`);
+                this.successMessage.set(`Application #${id} approved successfully! Notification sent to owner.`);
                 this.applicationsService.loadApplications();
+                setTimeout(() => this.notificationsService.loadNotifications(), 600);
             },
             error: (err: any) => {
                 this.errorMessage.set(err.message || 'Failed to approve application.');

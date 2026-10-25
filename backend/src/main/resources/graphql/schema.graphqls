@@ -10,6 +10,10 @@ enum ApplicationStatus {
     REJECTED
 }
 
+enum NotificationEventType {
+    DOG_PURCHASE_COMPLETED
+}
+
 type Dog {
     id: ID!
     name: String!
@@ -33,6 +37,15 @@ type AdoptionApplication {
     createdAt: String
 }
 
+type Notification {
+    id: ID!
+    owner: Owner!
+    eventType: NotificationEventType!
+    message: String!
+    read: Boolean!
+    createdAt: String
+}
+
 type Query {
     dogs: [Dog]
     dogById(id: ID!): Dog
@@ -42,14 +55,18 @@ type Query {
     applications: [AdoptionApplication]
     applicationById(id: ID!): AdoptionApplication
     applicationsByOwnerId(ownerId: ID!): [AdoptionApplication]
+    notifications: [Notification]
+    notificationsByOwnerId(ownerId: ID!): [Notification]
 }
 
 type Mutation {
     createDog(name: String!, age: Int!, fee: Float, status: DogStatus): Dog!
     createOwner(name: String!, money: Float!): Owner!
     deleteOwnerById(id: ID!): Int!
-    updateOwnerMoney(id: ID!, money: Float!): Owner!
+    updateOwnerMoney(id: ID!): Owner!
     createAdoptionApplication(ownerId: ID!, dogId: ID!): AdoptionApplication!
     approveAdoptionApplication(id: ID!): AdoptionApplication!
     rejectAdoptionApplication(id: ID!): AdoptionApplication!
+    markNotificationAsRead(id: ID!): Notification!
+    markAllNotificationsAsRead(ownerId: ID!): [Notification]!
 }
